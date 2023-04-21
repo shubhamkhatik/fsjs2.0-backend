@@ -25,6 +25,7 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
     const decodedJwtPayload = JWT.verify(token, config.JWT_SECRET);
 
     req.user = await User.findById(decodedJwtPayload._id, "name email role");
+    // select only the User db=>name email role and we save it in req [ex=>req.user.name]
     next();
   } catch (error) {
     throw new CustomError("Not authorized to access this resource", 401);

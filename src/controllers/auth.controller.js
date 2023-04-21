@@ -98,14 +98,15 @@ export const logout = asyncHandler(async (req, res) => {
     message: "Logged Out",
   });
 });
-
+//IN the isLoggedIn middleware we save the user info email role and name in req
+// so we dont need to check again token
+//we use this getProfile after isLoggedin middleware
 export const getProfile = asyncHandler(async (req, res) => {
+  // const user = req.user
   const { user } = req;
-
   if (!user) {
     throw new CustomError("User not found", 401);
   }
-
   res.status(200).json({
     success: true,
     user,
