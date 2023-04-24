@@ -23,7 +23,8 @@ export const addProduct = asyncHandler(async (req, res) => {
     if (err) {
       throw new CustomError(err.message || "Something went wrong", 500);
     }
-// externally create id for naming the images so they will have unique name
+    // externally create id for naming the images so they will have unique name
+    // using objectId helps on deleting photos from s3 bcz we need to again generate same key
     let productId = new Mongoose.Types.ObjectId().toHexString();
 
     console.log(fields, files);
@@ -36,9 +37,14 @@ export const addProduct = asyncHandler(async (req, res) => {
     ) {
       throw new CustomError("Please fill all the fields", 500);
     }
+    // note: here s3FileUpload function return Promise
+    // we r sending array of images so it generate promise for each image saving
+    // promises.all grabs all promises and return one
 
     let imgArrayResp = Promise.all(
       Object.keys(files).map(async (file, index) => {
+        //each file object has key with name filekey, sometime data will be trick so we use []
+        // u can use file.filekey but avoid it
         const element = file[fileKey];
         console.log(element);
         const data = fs.readFileSync(element.filepath);
@@ -80,15 +86,15 @@ export const addProduct = asyncHandler(async (req, res) => {
 });
 
 export const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
+  const AllProducts = await Product.find({});
+  //   const AllProducts = await Product.find();
 
-  if (!products) {
+  if (!AllProducts) {
     throw new CustomError("No products found", 404);
   }
-
   res.status(200).json({
     success: true,
-    products,
+    AllProducts,
   });
 });
 
@@ -131,9 +137,10 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     throw new CustomError("No product found", 404);
   }
 
-  //resolve promise
+  //resolve promise again s3deleteFile  return promise
   // loop through photos array => delete each photo
-  //key : product._id
+  //key : product._id  ==> we generate using objectId line no.28
+  // so we get same key while deleting
 
   const deletePhotos = Promise.all(
     product.photos.map(async (elem, index) => {
