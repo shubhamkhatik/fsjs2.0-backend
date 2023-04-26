@@ -2,7 +2,7 @@ import User from "../models/user.schema.js";
 import JWT from "jsonwebtoken";
 import asyncHandler from "../service/asyncHandler.js";
 import config from "../config/index.js";
-import CustomError from "../utils/CustomError.js";
+import CustomError from "../utils/customError.js";
 
 export const isLoggedIn = asyncHandler(async (req, res, next) => {
   let token;

@@ -1,7 +1,7 @@
 // signup a new user
 import User from "../models/user.schema.js";
 import asyncHandler from "../service/asyncHandler.js";
-import CustomError from "../utils/CustomError.js";
+import CustomError from "../utils/customError.js";
 
 export const cookieOptions = {
   expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
@@ -42,8 +42,9 @@ export const signUp = asyncHandler(async (req, res) => {
 
   const token = user.getJWTtoken();
   //safety
-  //password is flush out not from db bcz we r not using any
-
+  //password is flush out
+  // not from db
+  console.log("token", token);
   user.password = undefined;
 
   //store this token in user's cookie
@@ -52,7 +53,8 @@ export const signUp = asyncHandler(async (req, res) => {
   // send back a response to user
   res.status(200).json({
     success: true,
-    token,
+    message: "Account successfully created",
+    token: token ?? "token not generated",
     user,
   });
 });
@@ -65,7 +67,8 @@ export const login = asyncHandler(async (req, res) => {
     throw new CustomError("PLease fill all details", 400);
   }
 
-  const user = User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
+  console.log("user object", user);
 
   if (!user) {
     throw new CustomError("Invalid credentials", 400);
@@ -74,12 +77,13 @@ export const login = asyncHandler(async (req, res) => {
   const isPasswordMatched = await user.comparePassword(password);
 
   if (isPasswordMatched) {
-    const token = user.getJWTtoken();
+    const token = await user.getJWTtoken();
+    console.log("login token", token);
     user.password = undefined;
     res.cookie("token", token, cookieOptions);
     return res.status(200).json({
       success: true,
-      token,
+      token: token ?? "token not generated",
       user,
     });
   }

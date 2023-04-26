@@ -160,3 +160,9 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     message: "Product has been deleted successfully",
   });
 });
+
+//ToDo: update product with photos
+//1.if fields then update/ if photos then add to s3 that is append
+//1.if fields then update/ if photos then remove older one add fresh one => useful
+//1.if fields then update/ remove some photos add some photos
+

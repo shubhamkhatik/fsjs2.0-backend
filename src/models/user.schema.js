@@ -30,15 +30,8 @@ const userSchema = new mongoose.Schema(
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
   },
+
   { timestamps: true }
-  //   {
-  //     methods: {
-  //       link: "https://mongoosejs.com/docs/guide.html#methods",
-  //       comparePassword: async function (enteredPassword) {
-  //         return await bcrypt.compare(enteredPassword, this.password);
-  //       },
-  //     },
-  //   }
 );
 
 //Encrypt the password before saving: HOOKS
@@ -49,6 +42,8 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+
+
 userSchema.methods = {
   //compare password
   comparePassword: async function (enteredPassword) {
@@ -56,9 +51,10 @@ userSchema.methods = {
   },
   //generate JWT Token
   getJWTtoken: function () {
-    JWT.sign({ _id: this._id, email: this.email }, config.JWT_SECRET, {
+    const token= JWT.sign({ _id: this._id, email: this.email }, config.JWT_SECRET, {
       expiresIn: config.JWT_EXPIRY,
     });
+    return token
   },
   //generate forgot password token
   generateForgotPasswordToken: function () {
