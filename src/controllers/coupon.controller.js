@@ -86,3 +86,32 @@ export const getAllCoupons = asyncHandler(async (req, res) => {
     allCoupons,
   });
 });
+
+
+
+
+export const getAllActiveCoupons = asyncHandler(async (req, res) => {
+    const coupon = await Coupon.find({ active: true });
+    if (!coupon) {
+      throw new CustomError("No active token found");
+    }
+    res.status(200).json({
+      success: true,
+      coupon,
+    });
+  });
+  //check updateCoupon method
+  export const disableCoupon = asyncHandler(async (req, res) => {
+    const { id: couponId } = req.params;
+    const isExists = await Coupon.findById(couponId);
+    if (!isExists) {
+      throw new CustomError("coupon with this id is not found", 404);
+    }
+    await Coupon.findByIdAndUpdate(couponId, {
+      active: false,
+    });
+    res.status(200).json({
+      success: true,
+      message: "token disable successfully",
+    });
+})
