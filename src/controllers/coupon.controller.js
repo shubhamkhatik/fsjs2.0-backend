@@ -62,7 +62,7 @@ export const updateCoupon = asyncHandler(async (req, res) => {
 
 export const deleteCoupon = asyncHandler(async (req, res) => {
   const { id: couponId } = req.params;
-  console.log(typeof couponId);
+  // console.log(typeof couponId);
 
   try {
     const coupon = await Coupon.findByIdAndDelete(couponId);
