@@ -17,10 +17,10 @@ export const cookieOptions = {
 
 export const signUp = asyncHandler(async (req, res) => {
   //get data from user
-  const { name, email, password } = req.body;
+  const { name, email, password,role} = req.body;
 
   //validation
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !role) {
     throw new CustomError("PLease add name, email, password all fields", 400);
     // throw new Error("Got an error") - We are using customError
   }
@@ -38,13 +38,13 @@ export const signUp = asyncHandler(async (req, res) => {
     name,
     email,
     password,
+    role
   });
 
   const token = user.getJWTtoken();
   //safety
   //password is flush out
   // not from db
-  console.log("token", token);
   user.password = undefined;
 
   //store this token in user's cookie
@@ -78,7 +78,6 @@ export const login = asyncHandler(async (req, res) => {
 
   if (isPasswordMatched) {
     const token = await user.getJWTtoken();
-    console.log("login token", token);
     user.password = undefined;
     res.cookie("token", token, cookieOptions);
     return res.status(200).json({

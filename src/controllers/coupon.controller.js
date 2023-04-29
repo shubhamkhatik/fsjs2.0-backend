@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Coupon from "../models/coupon.schema.js";
 import asyncHandler from "../service/asyncHandler.js";
 import CustomError from "../utils/customError.js";
@@ -61,17 +62,28 @@ export const updateCoupon = asyncHandler(async (req, res) => {
 
 export const deleteCoupon = asyncHandler(async (req, res) => {
   const { id: couponId } = req.params;
+  console.log(typeof couponId);
 
-  const coupon = await Coupon.findByIdAndDelete(couponId);
+  try {
+    const coupon = await Coupon.findByIdAndDelete(couponId);
 
-  if (!coupon) {
-    throw new CustomError("Coupon not found", 404);
+    if (!coupon) {
+      return res.status(404).json({
+        success: false,
+        message: "coupon not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Coupon deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
-
-  res.status(200).json({
-    success: true,
-    message: "Coupon deleted",
-  });
 });
 
 export const getAllCoupons = asyncHandler(async (req, res) => {
@@ -87,31 +99,36 @@ export const getAllCoupons = asyncHandler(async (req, res) => {
   });
 });
 
-
-
-
 export const getAllActiveCoupons = asyncHandler(async (req, res) => {
-    const coupon = await Coupon.find({ active: true });
-    if (!coupon) {
-      throw new CustomError("No active token found");
-    }
-    res.status(200).json({
-      success: true,
-      coupon,
-    });
+  const coupon = await Coupon.find({ active: true });
+  if (!coupon) {
+    throw new CustomError("No active token found");
+  }
+  res.status(200).json({
+    success: true,
+    coupon,
   });
-  //check updateCoupon method
-  export const disableCoupon = asyncHandler(async (req, res) => {
-    const { id: couponId } = req.params;
-    const isExists = await Coupon.findById(couponId);
-    if (!isExists) {
-      throw new CustomError("coupon with this id is not found", 404);
-    }
-    await Coupon.findByIdAndUpdate(couponId, {
+});
+//check updateCoupon method both are same
+export const disableCoupon = asyncHandler(async (req, res) => {
+  const { id: couponId } = req.params;
+  const isExists = await Coupon.findById(couponId);
+  if (!isExists) {
+    throw new CustomError("coupon with this id is not found", 404);
+  }
+  const updateCoupon = await Coupon.findByIdAndUpdate(
+    couponId,
+    {
       active: false,
-    });
-    res.status(200).json({
-      success: true,
-      message: "token disable successfully",
-    });
-})
+    },
+    {
+      new: true, //return updated collection not older one
+      runValidators: true, //check validation which is mention in schema like maxlength
+    }
+  );
+  res.status(200).json({
+    success: true,
+    message: "token disable successfully",
+    updateCoupon,
+  });
+});
