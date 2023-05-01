@@ -3,7 +3,7 @@ import formidable from "formidable";
 import { s3FileUpload, s3deleteFile } from "../service/imageUpload.js";
 import Mongoose from "mongoose";
 import asyncHandler from "../service/asyncHandler.js";
-import CustomError from "../utils/CustomError.js";
+import CustomError from "../utils/customError.js";
 import config from "../config/index.js";
 import fs from "fs";
 

@@ -35,6 +35,9 @@ export const createCoupon = asyncHandler(async (req, res) => {
 export const updateCoupon = asyncHandler(async (req, res) => {
   const { id: couponId } = req.params;
   const { action } = req.body;
+  if (typeof action !== "boolean") {
+    throw new CustomError("please provide boolean value in action",400)
+  }
 
   // action is boolean or not
 
