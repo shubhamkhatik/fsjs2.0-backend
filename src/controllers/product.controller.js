@@ -85,6 +85,25 @@ export const addProduct = asyncHandler(async (req, res) => {
   });
 });
 
+//dummy code to add product
+// export const addProduct = asyncHandler(async (req, res) => {
+//   const {name,price,description,photos,stock, sold ,collectionId} = req.body;
+//     let productId = new Mongoose.Types.ObjectId().toHexString();
+//     const product = await Product.create({
+//       _id: productId,
+//       name,price,description,photos,stock, sold ,collectionId
+//     });
+
+//     if (!product) {
+//       throw new CustomError("Product failed to be created in DB", 400);
+//     }
+//     res.status(200).json({
+//       success: true,
+//       product,
+//     });
+//   });
+
+
 export const getAllProducts = asyncHandler(async (req, res) => {
   const AllProducts = await Product.find({});
   //   const AllProducts = await Product.find();
