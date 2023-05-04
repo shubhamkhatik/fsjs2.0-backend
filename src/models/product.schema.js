@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: ["true", "please provide a product price"],
-        maxLength: [5, "product name should not be max than 5 chars"]
+        maxLength: [1, "product name should not be max than 1 chars"]
     },
     description: {
         type: String
@@ -35,7 +35,9 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Collection"
     }
-}, {timestamps: true})
+}, 
+{ timestamps: true, toJSON: { virtuals: true }, session: true }
+)
 
 
 export default mongoose.model("Product", productSchema)
